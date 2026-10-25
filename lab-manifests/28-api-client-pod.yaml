@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-client
+  labels:
+    app: api-client
+spec:
+  serviceAccountName: pod-reader-sa
+  # automountServiceAccountToken is left at its default (true) on purpose:
+  # this Pod's whole purpose is to call the API.
+  containers:
+    - name: shell
+      image: nicolaka/netshoot:latest
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+      resources:
+        requests: { cpu: 10m, memory: 32Mi }
+        limits:   { memory: 128Mi }

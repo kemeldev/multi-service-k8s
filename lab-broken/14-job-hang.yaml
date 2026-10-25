@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hang-job
+  labels:
+    app: heartbeat-cleanup
+spec:
+  backoffLimit: 2                 # retry up to 2 times on failure (Step 4)
+  template:
+    metadata:
+      labels:
+        app: heartbeat-cleanup
+    spec:
+      restartPolicy: Never        # required for a Job (Step 3)
+      automountServiceAccountToken: false
+      containers:
+        - name: cleanup
+          image: heartbeat-cleanup:0.1.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: cleanup-config
+          env:
+            - name: FAIL_MODE
+              value: "slow"
+            - name: SLOW_SECONDS
+              value: "600"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault

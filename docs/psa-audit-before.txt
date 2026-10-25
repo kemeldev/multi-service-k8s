@@ -1,0 +1,5 @@
+Warning: existing pods in namespace "multi-service-app" violate the new PodSecurity enforce level "restricted:latest"
+Warning: api-client (and 2 other pods): allowPrivilegeEscalation != false, unrestricted capabilities, runAsNonRoot != true, seccompProfile
+Warning: node-api-5c9fb96d7d-8nkjq (and 2 other pods): seccompProfile
+Warning: react-frontend-789fd94754-nhn74: runAsNonRoot != true
+namespace/multi-service-app labeled (server dry run)

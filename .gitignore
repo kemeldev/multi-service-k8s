@@ -1,0 +1,11 @@
+# Secret inputs: never commit
+deploy/k8s/overlays/*/secrets/*.env
+*.kubeconfig
+kubeconfig*
+# Database dumps and backups
+backup/
+*.sql
+# Leftovers
+*.bak
+.venv/
+__pycache__/

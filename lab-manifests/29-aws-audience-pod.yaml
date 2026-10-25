@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aws-token-demo
+spec:
+  serviceAccountName: pod-reader-sa
+  automountServiceAccountToken: false     # no Kubernetes API token
+  containers:
+    - name: shell
+      image: nicolaka/netshoot:latest
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+      resources:
+        requests: { cpu: 10m, memory: 32Mi }
+        limits:   { memory: 128Mi }
+      volumeMounts:
+        - name: aws-iam-token
+          mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+          readOnly: true
+  volumes:
+    - name: aws-iam-token
+      projected:
+        sources:
+          - serviceAccountToken:
+              audience: sts.amazonaws.com    # intended for AWS, not for Kubernetes
+              expirationSeconds: 3600
+              path: token
